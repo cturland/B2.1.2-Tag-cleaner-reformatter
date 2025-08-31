@@ -40,12 +40,3 @@ red-blue-green-data-science
     <li>Join with <code>"-".join(list_of_tags)</code></li>
   </ul>
 </details>
-
-<hr>
-
-<h2>Teacher notes (quick marking cues)</h2>
-<ul>
-  <li><strong>Exercise 1:</strong> correct use of <code>s[:3]</code>, <code>s[-2:]</code>, <code>s[::-1]</code>; handles short strings gracefully.</li>
-  <li><strong>Exercise 2:</strong> correct <code>@</code> split; masking logic respects 1–2 char locals; domain unchanged.</li>
-  <li><strong>Exercise 3:</strong> trims spaces, lowercases, filters by length, and uses <code>split</code>/<code>join</code> appropriately.</li>
-</ul>
