@@ -1,1 +1,253 @@
+name: Autograding Tests – Tag cleaner & reformatter
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 1) Example-like case
+    - name: "Test 1: Mixed spacing/case with hyphen"
+      id: t1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T1
+        command: python3 solution.py
+        input: |
+          " Red, blue ,Green, ai, ML , Data-Science "
+        expected-output: |
+          Clean list:
+          ['red', 'blue', 'green', 'ai', 'ml', 'data-science']
+          Kebab:
+          red-blue-green-ai-ml-data-science
+          Filtered (len >= 3):
+          ['red', 'blue', 'green', 'data-science']
+          Filtered kebab:
+          red-blue-green-data-science
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 2) Simple two tags (both kept)
+    - name: "Test 2: Two tags kept"
+      id: t2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T2
+        command: python3 solution.py
+        input: |
+          " apple , Banana "
+        expected-output: |
+          Clean list:
+          ['apple', 'banana']
+          Kebab:
+          apple-banana
+          Filtered (len >= 3):
+          ['apple', 'banana']
+          Filtered kebab:
+          apple-banana
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 3) Short tags removed (ai, c); punctuation kept
+    - name: "Test 3: Short tags filtered"
+      id: t3
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T3
+        command: python3 solution.py
+        input: |
+          AI, ds , Go , C , C++
+        expected-output: |
+          Clean list:
+          ['ai', 'ds', 'go', 'c', 'c++']
+          Kebab:
+          ai-ds-go-c-c++
+          Filtered (len >= 3):
+          ['ds', 'go', 'c++']
+          Filtered kebab:
+          ds-go-c++
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 4) Hyphens retained; 'ui' removed
+    - name: "Test 4: Front/back-end + ui"
+      id: t4
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T4
+        command: python3 solution.py
+        input: |
+          " Front-End , back-END , UI "
+        expected-output: |
+          Clean list:
+          ['front-end', 'back-end', 'ui']
+          Kebab:
+          front-end-back-end-ui
+          Filtered (len >= 3):
+          ['front-end', 'back-end']
+          Filtered kebab:
+          front-end-back-end
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 5) Single short tag (all filtered out)
+    - name: "Test 5: Single short tag"
+      id: t5
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T5
+        command: python3 solution.py
+        input: |
+          ML
+        expected-output: |
+          Clean list:
+          ['ml']
+          Kebab:
+          ml
+          Filtered (len >= 3):
+          []
+          Filtered kebab:
+          
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 6) Already clean
+    - name: "Test 6: Already clean"
+      id: t6
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T6
+        command: python3 solution.py
+        input: |
+          data,science,rocks
+        expected-output: |
+          Clean list:
+          ['data', 'science', 'rocks']
+          Kebab:
+          data-science-rocks
+          Filtered (len >= 3):
+          ['data', 'science', 'rocks']
+          Filtered kebab:
+          data-science-rocks
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 7) Numbers and alphanumerics
+    - name: "Test 7: Numbers and alphanumerics"
+      id: t7
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T7
+        command: python3 solution.py
+        input: |
+          2025, Y7 , Y8, python3
+        expected-output: |
+          Clean list:
+          ['2025', 'y7', 'y8', 'python3']
+          Kebab:
+          2025-y7-y8-python3
+          Filtered (len >= 3):
+          ['2025', 'python3']
+          Filtered kebab:
+          2025-python3
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 8) Duplicates preserved
+    - name: "Test 8: Duplicates preserved"
+      id: t8
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T8
+        command: python3 solution.py
+        input: |
+          red, Red , blue ,blue, green
+        expected-output: |
+          Clean list:
+          ['red', 'red', 'blue', 'blue', 'green']
+          Kebab:
+          red-red-blue-blue-green
+          Filtered (len >= 3):
+          ['red', 'red', 'blue', 'blue', 'green']
+          Filtered kebab:
+          red-red-blue-blue-green
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 9) Hyphens and underscores kept
+    - name: "Test 9: Hyphens/underscores"
+      id: t9
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T9
+        command: python3 solution.py
+        input: |
+          A_B , c-d , e--f
+        expected-output: |
+          Clean list:
+          ['a_b', 'c-d', 'e--f']
+          Kebab:
+          a_b-c-d-e--f
+          Filtered (len >= 3):
+          ['a_b', 'c-d', 'e--f']
+          Filtered kebab:
+          a_b-c-d-e--f
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    # 10) Many tags; mixture of short/long
+    - name: "Test 10: Mixed large"
+      id: t10
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: Tags T10
+        command: python3 solution.py
+        input: |
+          NLP, ai, ML, Deep-Learning , cv , nlp
+        expected-output: |
+          Clean list:
+          ['nlp', 'ai', 'ml', 'deep-learning', 'cv', 'nlp']
+          Kebab:
+          nlp-ai-ml-deep-learning-cv-nlp
+          Filtered (len >= 3):
+          ['nlp', 'deep-learning', 'nlp']
+          Filtered kebab:
+          nlp-deep-learning-nlp
+        comparison-method: exact
+        timeout: 2
+        max-score: 1
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        T1_RESULTS: ${{ steps.t1.outputs.result }}
+        T2_RESULTS: ${{ steps.t2.outputs.result }}
+        T3_RESULTS: ${{ steps.t3.outputs.result }}
+        T4_RESULTS: ${{ steps.t4.outputs.result }}
+        T5_RESULTS: ${{ steps.t5.outputs.result }}
+        T6_RESULTS: ${{ steps.t6.outputs.result }}
+        T7_RESULTS: ${{ steps.t7.outputs.result }}
+        T8_RESULTS: ${{ steps.t8.outputs.result }}
+        T9_RESULTS: ${{ steps.t9.outputs.result }}
+        T10_RESULTS: ${{ steps.t10.outputs.result }}
+      with:
+        runners: t1,t2,t3,t4,t5,t6,t7,t8,t9,t10
 
