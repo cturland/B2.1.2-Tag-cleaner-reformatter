@@ -23,7 +23,7 @@ jobs:
         test-name: Tags T1
         command: python3 solution.py
         input: |
-          " Red, blue ,Green, ai, ML , Data-Science "
+          Red, blue ,Green, ai, ML , Data-Science
         expected-output: |
           Clean list:
           ['red', 'blue', 'green', 'ai', 'ml', 'data-science']
@@ -45,7 +45,7 @@ jobs:
         test-name: Tags T2
         command: python3 solution.py
         input: |
-          " apple , Banana "
+          apple , Banana
         expected-output: |
           Clean list:
           ['apple', 'banana']
@@ -74,9 +74,9 @@ jobs:
           Kebab:
           ai-ds-go-c-c++
           Filtered (len >= 3):
-          ['ds', 'go', 'c++']
+          ['c++']
           Filtered kebab:
-          ds-go-c++
+          c++
         comparison-method: exact
         timeout: 2
         max-score: 1
@@ -89,7 +89,7 @@ jobs:
         test-name: Tags T4
         command: python3 solution.py
         input: |
-          " Front-End , back-END , UI "
+          Front-End , back-END , UI
         expected-output: |
           Clean list:
           ['front-end', 'back-end', 'ui']
@@ -250,4 +250,3 @@ jobs:
         T10_RESULTS: ${{ steps.t10.outputs.result }}
       with:
         runners: t1,t2,t3,t4,t5,t6,t7,t8,t9,t10
-
